@@ -13,12 +13,18 @@ private:
     bool twoHanded;
 
 public:
-    Weapon(const string& name, char symbol, int damage, bool twoHanded);
+    Weapon(const string& name, char symbol, int damage, bool twoHanded) :
+        Item(name, symbol), damage(damage), twoHanded(twoHanded) {};
 
-    bool canEquip() const override;
-    bool isTwoHanded() const override;
-    int getDamage() const override;
-    string getDescription() const override;
+    bool canEquip() const override { return true; };
+    bool isTwoHanded() const override { return twoHanded; };
+    int getDamage() const override { return damage; };
+    string getDescription() const override {
+        string txt = name + " (weapon, dmg " + to_string(damage) + ")";
+        if (twoHanded) txt += " [2H]";
+        else txt += " [1H]";
+        return txt;
+    }
 };
 
 

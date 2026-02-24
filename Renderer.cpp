@@ -65,7 +65,10 @@ void Renderer::draw(const World& world, const Player& player) const {
         for (size_t i = 0; i < inv.size(); ++i) {
             string line = to_string(i);
             line += ": ";
-            line += tileItemToText(inv[i].get());
+            line += inv[i].get()->getDescription();
+            if (i == player.getInvIdx()) {
+                line += " <";
+            }
             side.push_back(line);
         }
     }
@@ -93,11 +96,11 @@ void Renderer::draw(const World& world, const Player& player) const {
             char ch = ' ';
 
             if (player.getRow() == r && player.getCol() == c) {
-                ch = 'P';
+                ch = '¶';
             } else {
                 const Tile& tile = world.at(r, c);
                 if (tile.isWall()) {
-                    ch = '#';
+                    ch = '█';
                 } else if (tile.hasItems()) {
                     const vector<unique_ptr<Item>>& items = tile.getItems();
                     if (!items.empty() && items[0] != nullptr) {
@@ -114,5 +117,9 @@ void Renderer::draw(const World& world, const Player& player) const {
             cout << "   " << side[r];
         }
         cout << '\n';
+    }
+
+    for (int r = rows; r < static_cast<int>(side.size()); ++r) {
+        cout << string(cols, ' ') << "   " << side[r] << '\n';
     }
 }

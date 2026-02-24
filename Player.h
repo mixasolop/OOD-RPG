@@ -31,13 +31,14 @@ private:
     unique_ptr<Item> rightHand;
     int gold;
     int coins;
+    int inventoryIdx = 0;
 
 public:
     Player();
 
     int getRow() const{return row;};
     int getCol() const{return col;};
-    void setPosition(int row, int col);
+    void setPosition(int row, int col) { this->row = row; this->col = col; };
 
     const Attributes& getAttributes() const;
 
@@ -49,9 +50,11 @@ public:
     int getGold() const {return gold;};
     int getCoins() const {return coins;};
 
-    bool move(int dRow, int dCol, const World& world);
-    void pickUp(unique_ptr<Item> item);
+    void pickUp(unique_ptr<Item> item) { inventory.push_back(move(item)); };
     unique_ptr<Item> dropItem(size_t index);
+
+    void moveInventory(bool Up);
+    const int getInvIdx() const { return inventoryIdx; };
 
     bool equipItem(size_t index, bool equipLeftHand);
     bool unequipItem(bool fromLeftHand);

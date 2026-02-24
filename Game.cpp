@@ -1,8 +1,63 @@
 ﻿#include "Game.h"
 
 using namespace std;
+#include <conio.h>
 
-Game::Game(){}
+Game::Game(){
+    player.setPosition(world.getRows()/2, world.getCols()/2);
+}
+
+void Game::handleInput(char key)
+{
+    switch (key)
+    {
+    case '.':
+        running = 0;
+        break;
+    case 'w':
+        if (!world.isWalkable(player.getRow()-1, player.getCol())) {
+            break;
+        }
+        player.setPosition(player.getRow()-1, player.getCol());
+        break;
+    case 'a':
+        if (!world.isWalkable(player.getRow(), player.getCol() - 1)) {
+            break;
+        }
+        player.setPosition(player.getRow(), player.getCol() - 1);
+        break;
+    case 's':
+        if (!world.isWalkable(player.getRow()+1, player.getCol())) {
+            break;
+        }
+        player.setPosition(player.getRow()+1, player.getCol());
+        break;
+    case 'd':
+        if (!world.isWalkable(player.getRow(), player.getCol() + 1)) {
+            break;
+        }
+        player.setPosition(player.getRow(), player.getCol() + 1);
+        break;
+    case 'e':
+        if (world.at(player.getRow(), player.getCol()).hasItems()) {
+            player.pickUp(world.at(player.getRow(), player.getCol()).takeItem(0));
+        }
+        break;
+    case '-':
+    case '_':
+        player.moveInventory(true);
+        break;
+    case '=':
+        player.moveInventory(false);
+        break;
+    case 'q':
+        world.at(player.getRow(), player.getCol()).addItem(player.dropItem(player.getInvIdx()));
+        player.moveInventory(true);
+        break;
+    default:
+        break;
+    }
+}
 
 void Game::render(){
     renderer.draw(world, player);
@@ -10,8 +65,10 @@ void Game::render(){
 
 void Game::run(){
     running = true;
-
-    while(running){
+    render();
+    while (running) {
+        char key = static_cast<char>(_getch());
+        handleInput(key);
         render();
     }
 }

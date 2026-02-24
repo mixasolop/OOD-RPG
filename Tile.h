@@ -22,9 +22,8 @@ public:
     void setWall(bool value);
 
     bool hasItems() const {return !items.empty();};
-    const vector<unique_ptr<Item>>& getItems() const;
+    const vector<unique_ptr<Item>>& getItems() const { return items; };
     vector<unique_ptr<Item>>& getItems() {return items;};
-
     void addItem(unique_ptr<Item> item);
     unique_ptr<Item> takeItem(size_t index);
 };

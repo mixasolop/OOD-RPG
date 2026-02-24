@@ -9,20 +9,18 @@ class Item {
 protected:
     string name;
     char symbol;
-
 public:
     Item(const string& name, char symbol) {this->name = name; this->symbol = symbol;};
-    virtual ~Item();
+    virtual ~Item() {};
 
     const string& getName() const {return name;};
     char getSymbol() const {return symbol;};
 
-    virtual string getDescription() const;
-    virtual bool canEquip() const;
-    virtual bool isTwoHanded() const;
-    virtual int getDamage() const;
-    virtual bool isCurrency() const;
-    virtual void collectCurrency(int& coins, int& gold) const;
+    virtual string getDescription() const { return name; }
+    virtual bool canEquip() const { return false; }
+    virtual bool isTwoHanded() const { return false; }
+    virtual int getDamage() const { return 0; }
+    virtual bool isCurrency() const { return false; }
+    virtual void collectCurrency(int& coins, int& gold) const { }
 };
-
 

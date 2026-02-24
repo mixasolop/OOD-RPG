@@ -19,7 +19,7 @@ public:
     World();
 
     bool isInside(int row, int col) const;
-    bool isWalkable(int row, int col) const;
+    bool isWalkable(int row, int col) const { return !grid[row][col].isWall(); };
 
     Tile& at(int row, int col) {return grid[row][col];};
     const Tile& at(int row, int col) const {return grid[row][col];};

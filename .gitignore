@@ -5,6 +5,10 @@
 
 # dotenv files
 .env
+*.sln
+*.vcxproj
+*.filters
+*.vscode
 
 # User-specific files
 *.rsuser
