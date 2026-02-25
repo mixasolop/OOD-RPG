@@ -27,8 +27,8 @@ private:
     int col;
     Attributes stats;
     vector<unique_ptr<Item>> inventory;
-    unique_ptr<Item> leftHand;
-    unique_ptr<Item> rightHand;
+    unique_ptr<Item> leftHand = nullptr;
+    unique_ptr<Item> rightHand = nullptr;
     int gold;
     int coins;
     int inventoryIdx = 0;
@@ -56,7 +56,7 @@ public:
     void moveInventory(bool Up);
     const int getInvIdx() const { return inventoryIdx; };
 
-    bool equipItem(size_t index, bool equipLeftHand);
+    bool equipItem(bool equipLeftHand);
     bool unequipItem(bool fromLeftHand);
 };
 

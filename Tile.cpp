@@ -3,8 +3,6 @@
 using namespace std;
 
 
-// No function definitions yet.
-
 void Tile::addItem(unique_ptr<Item> item)
 {
     if (item != nullptr) {

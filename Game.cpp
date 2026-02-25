@@ -51,8 +51,25 @@ void Game::handleInput(char key)
         player.moveInventory(false);
         break;
     case 'q':
-        world.at(player.getRow(), player.getCol()).addItem(player.dropItem(player.getInvIdx()));
-        player.moveInventory(true);
+        {
+            unique_ptr<Item> dropped = player.dropItem(player.getInvIdx());
+            if (dropped != nullptr) {
+                world.at(player.getRow(), player.getCol()).addItem(move(dropped));
+                player.moveInventory(true);
+            }
+        }
+        break;
+    case 'l':
+        if (player.equipItem(true) == false) {
+            player.unequipItem(true);
+            break;
+        }
+        break;
+    case 'k':
+        if (player.equipItem(false) == false) {
+            player.unequipItem(false);
+            break;
+        }
         break;
     default:
         break;
