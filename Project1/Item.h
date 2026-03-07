@@ -1,8 +1,11 @@
 ﻿#pragma once
 
+#include <memory>
 #include <string>
 
 using namespace std;
+
+class Player;
 
 
 class Item {
@@ -22,5 +25,6 @@ public:
     virtual int getDamage() const { return 0; }
     virtual bool isCurrency() const { return false; }
     virtual void collectCurrency(int& coins, int& gold) const { }
+    virtual void onPickup(Player& player, unique_ptr<Item> self);
 };
 

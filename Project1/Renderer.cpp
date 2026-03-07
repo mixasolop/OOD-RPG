@@ -40,6 +40,17 @@ namespace {
         SetConsoleCursorPosition(h, pos);
     }
 
+    void moveCursorTo(int row, int col) {
+        HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+        COORD pos{ static_cast<SHORT>(col), static_cast<SHORT>(row) };
+        SetConsoleCursorPosition(h, pos);
+    }
+
+    void writeAt(int row, int col, const string& text) {
+        moveCursorTo(row, col);
+        cout << text;
+    }
+
     void hideCursor() {
         HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
         CONSOLE_CURSOR_INFO ci{};
@@ -117,28 +128,8 @@ void Renderer::draw(const World& world, const Player& player) const {
         }
     }
 
-    int maxSide = 0;
-    for (const auto& s : side) maxSide = max(maxSide, (int)s.size());
-
-    int renderHeight = max(rows, (int)side.size());
-    int renderWidth = cols + 3 + maxSide;
-
-    static int lastHeight = 0;
-    static int lastWidth = 0;
-
-    int clearHeight = max(renderHeight, lastHeight);
-    int clearWidth = max(renderWidth, lastWidth);
-    clearRenderArea(clearWidth, clearHeight);
-
-    lastHeight = renderHeight;
-    lastWidth = renderWidth;
-
-    clearRenderArea(renderWidth, renderHeight);
-
+    vector<string> map(rows, string(cols, ' '));
     for (int r = 0; r < rows; ++r) {
-        string rowText;
-        rowText.reserve(cols);
-
         for (int c = 0; c < cols; ++c) {
             char ch = ' ';
             if (player.getRow() == r && player.getCol() == c) ch = '¶';
@@ -150,16 +141,76 @@ void Renderer::draw(const World& world, const Player& player) const {
                     if (!items.empty() && items[0] != nullptr) ch = items[0]->getSymbol();
                 }
             }
-            rowText.push_back(ch);
+            map[r][c] = ch;
+        }
+    }
+
+    static bool initialized = false;
+    static vector<string> prevMap;
+    static vector<string> prevSide;
+    static int prevRows = 0;
+    static int prevCols = 0;
+    static int prevRenderWidth = 0;
+    static int prevRenderHeight = 0;
+
+    int maxSide = 0;
+    for (const auto& s : side) maxSide = max(maxSide, (int)s.size());
+    const int renderHeight = max(rows, (int)side.size());
+    const int renderWidth = cols + 3 + maxSide;
+
+    const bool shapeChanged = (!initialized || rows != prevRows || cols != prevCols);
+    if (shapeChanged) {
+        const int clearHeight = max(renderHeight, prevRenderHeight);
+        const int clearWidth = max(renderWidth, prevRenderWidth);
+        clearRenderArea(clearWidth, clearHeight);
+        initialized = false;
+    }
+
+    if (!initialized) {
+        for (int r = 0; r < rows; ++r) {
+            writeAt(r, 0, map[r]);
+            if (r < (int)side.size()) {
+                writeAt(r, cols + 3, side[r]);
+            }
         }
 
-        cout << rowText;
-        if (r < (int)side.size()) cout << "   " << side[r];
-        cout << '\n';
+        for (int r = rows; r < (int)side.size(); ++r) {
+            writeAt(r, cols + 3, side[r]);
+        }
+        initialized = true;
+    }
+    else {
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                if (map[r][c] != prevMap[r][c]) {
+                    string ch(1, map[r][c]);
+                    writeAt(r, c, ch);
+                }
+            }
+        }
+
+        const int maxLines = max((int)prevSide.size(), (int)side.size());
+        for (int r = 0; r < maxLines; ++r) {
+            const string oldLine = (r < (int)prevSide.size()) ? prevSide[r] : "";
+            const string newLine = (r < (int)side.size()) ? side[r] : "";
+            if (oldLine != newLine) {
+                string out = newLine;
+                if (oldLine.size() > newLine.size()) {
+                    out += string(oldLine.size() - newLine.size(), ' ');
+                }
+                writeAt(r, cols + 3, out);
+            }
+        }
     }
 
-    for (int r = rows; r < (int)side.size(); ++r) {
-        cout << string(cols, ' ') << "   " << side[r] << '\n';
-    }
+    moveCursorTopLeft();
+    cout.flush();
+
+    prevMap = move(map);
+    prevSide = move(side);
+    prevRows = rows;
+    prevCols = cols;
+    prevRenderWidth = renderWidth;
+    prevRenderHeight = renderHeight;
 }
 

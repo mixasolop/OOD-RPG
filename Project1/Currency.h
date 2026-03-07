@@ -20,4 +20,5 @@ public:
     std::string getDescription() const override {
         return name + " +" + std::to_string(amount);
     };
+    void onPickup(Player& player, std::unique_ptr<Item> self) override;
 };

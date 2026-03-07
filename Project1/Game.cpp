@@ -39,11 +39,8 @@ void Game::handleInput(char key)
     case 'e':
         if (world.at(player.getRow(), player.getCol()).hasItems()) {
             unique_ptr<Item> item = world.at(player.getRow(), player.getCol()).takeItem(0);
-            if (item && item->isCurrency()) {
-                player.addCurrencyFrom(*item);
-            }
-            else if (item) {
-                player.pickUp(move(item));
+            if (item) {
+                item->onPickup(player, move(item));
             }
         }
         break;
